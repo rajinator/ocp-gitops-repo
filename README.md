@@ -69,8 +69,7 @@ oc apply -f bootstrap/dev-cluster.yaml
 **How It Works:**
 1. OpenShift GitOps operator is bootstrapped manually (one-time setup)
 2. App-of-Apps deploys:
-   - **InstallPlan Approver Operator** (sync-wave 1)
-   - **Cluster-wide InstallPlanApprover CR** (sync-wave 2)
+   - **InstallPlan Approver Operator + CR** (sync-wave 1)
    - **OpenShift GitOps self-management** (sync-wave 3)
    - **All other operators** (sync-wave 5+)
 3. All subsequent InstallPlans are automatically approved by the centralized operator
@@ -94,8 +93,7 @@ oc get secret openshift-gitops-cluster -n openshift-gitops -o jsonpath='{.data.a
 ## Available Apps
 
 ### Infrastructure
-- **installplan-approver-operator** - Centralized OLM InstallPlan approval operator
-- **installplan-approver-cr** - Cluster-wide InstallPlanApprover CR for automatic approval
+- **installplan-approver-operator** - Centralized OLM InstallPlan approval (operator + multi-namespace CR)
 
 ### GitOps Platform
 - **openshift-gitops-custom** - Custom ArgoCD config with version-pinning aware health checks
