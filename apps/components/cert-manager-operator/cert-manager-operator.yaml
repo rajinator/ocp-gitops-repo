@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/rajinator/k8s-apps-repo
     targetRevision: HEAD
-    path: ocp/cert-manager-operator/overlays/with-installplan-approver
+    path: ocp/cert-manager-operator/base
   
   destination:
     name: in-cluster
