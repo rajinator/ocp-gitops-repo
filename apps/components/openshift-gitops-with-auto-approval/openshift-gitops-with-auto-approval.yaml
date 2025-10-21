@@ -1,22 +1,22 @@
 ---
-# ArgoCD Application for OpenShift GitOps self-management with auto-approval
-# Uses CronJob to automatically approve InstallPlans
+# ArgoCD Application for OpenShift GitOps self-management
+# Uses centralized InstallPlan Approver Operator for automatic approval
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: openshift-gitops-with-auto-approval
+  name: openshift-gitops-self-managed
   namespace: openshift-gitops
   labels:
     app-type: self-management
-    approval-mode: automatic
-    argoproj.io/sync-wave: "0"
+    approval-mode: centralized
+    argoproj.io/sync-wave: "3"
 spec:
   project: default
   
   source:
     repoURL: https://github.com/rajinator/k8s-apps-repo
     targetRevision: HEAD
-    path: ocp/openshift-gitops-operator/overlays/with-auto-approval
+    path: ocp/openshift-gitops-operator/base
   
   destination:
     name: in-cluster

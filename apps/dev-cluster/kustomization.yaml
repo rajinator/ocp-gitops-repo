@@ -6,14 +6,16 @@ kind: Kustomization
 components:
   # Note: openshift-gitops-operator is for manual bootstrap only, not app-of-apps
   
-  # OpenShift GitOps - managed by ArgoCD
-  - ../components/openshift-gitops-custom        # ArgoCD configuration
-  - ../components/openshift-gitops-with-auto-approval  # Operator self-management with auto-approval
+  # Centralized InstallPlan Approval (sync-wave 1-2)
+  - ../components/installplan-approver-operator     # Operator deployment
+  - ../components/installplan-approver-cr           # Cluster-wide approval CR
   
-  # GitLab Runner Operator
+  # OpenShift GitOps - managed by ArgoCD (sync-wave 0, 3)
+  - ../components/openshift-gitops-custom                    # ArgoCD configuration
+  - ../components/openshift-gitops-with-auto-approval        # Operator self-management (uses centralized approval)
+  
+  # OLM Operators - all use centralized approval (sync-wave 5)
   - ../components/gitlab-runner-operator
-  
-  # Cert Manager Operator (test with InstallPlanApprover)
   - ../components/cert-manager-operator
 
 # Cluster-specific labels

@@ -1,34 +1,32 @@
 ---
-# ArgoCD Application for GitLab Runner Operator
-# Uses centralized InstallPlan Approver Operator for automatic approval
+# ArgoCD Application for Cluster-wide InstallPlanApprover CR
+# Single CR to handle automatic approval for all OLM operators
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: gitlab-runner-operator
+  name: installplan-approver-cr
   namespace: openshift-gitops
   labels:
-    app-type: operator
-    approval-mode: centralized
-    argoproj.io/sync-wave: "5"
+    app-type: config
+    argoproj.io/sync-wave: "0"
 spec:
   project: default
   
   source:
     repoURL: https://github.com/rajinator/k8s-apps-repo
     targetRevision: HEAD
-    path: ocp/gitlab-runner-operator/base
+    path: ocp/installplan-approver-operator/examples/multi-namespace
   
   destination:
     name: in-cluster
-    namespace: gitlab-runner-operator
+    namespace: operators
   
   syncPolicy:
     automated:
       prune: false
       selfHeal: true
     syncOptions:
-      - CreateNamespace=false
-      - PruneLast=true  # Delete resources in reverse order (namespace last)
+      - CreateNamespace=true
     retry:
       limit: 3
       backoff:

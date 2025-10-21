@@ -82,9 +82,15 @@ oc get secret openshift-gitops-cluster -n openshift-gitops -o jsonpath='{.data.a
 
 ## Available Apps
 
+### Infrastructure
+- **installplan-approver-operator** - Centralized OLM InstallPlan approval operator
+- **installplan-approver-cr** - Cluster-wide InstallPlanApprover CR for automatic approval
+
+### GitOps Platform
 - **openshift-gitops-custom** - Custom ArgoCD config with version-pinning aware health checks
-- **openshift-gitops-self-managed** - Operator self-management (manual approval)
-- **openshift-gitops-with-auto-approval** - Operator self-management (auto approval via CronJob)
+- **openshift-gitops-with-auto-approval** - Operator self-management (uses centralized approval)
+
+### OLM Operators
 - **cert-manager-operator** - Certificate management with version pinning
 - **gitlab-runner-operator** - GitLab CI/CD runner management
 
