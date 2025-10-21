@@ -1,4 +1,6 @@
 ---
+# ArgoCD Application for cert-manager Operator
+# Uses centralized InstallPlan Approver Operator for automatic approval
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -6,6 +8,7 @@ metadata:
   namespace: openshift-gitops
   labels:
     app-type: operator
+    approval-mode: centralized
     argoproj.io/sync-wave: "5"
 spec:
   project: default
