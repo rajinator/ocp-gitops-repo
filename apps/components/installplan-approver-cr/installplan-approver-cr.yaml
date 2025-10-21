@@ -8,7 +8,7 @@ metadata:
   namespace: openshift-gitops
   labels:
     app-type: config
-    argoproj.io/sync-wave: "0"
+    argoproj.io/sync-wave: "1"
 spec:
   project: default
   
@@ -26,7 +26,7 @@ spec:
       prune: false
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=false
     retry:
       limit: 3
       backoff:

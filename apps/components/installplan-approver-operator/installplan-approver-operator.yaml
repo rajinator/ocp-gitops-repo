@@ -8,7 +8,7 @@ metadata:
   namespace: openshift-gitops
   labels:
     app-type: operator
-    argoproj.io/sync-wave: "-1"
+    argoproj.io/sync-wave: "0"
 spec:
   project: default
   
