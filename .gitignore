@@ -1,0 +1,17 @@
+# Private notes
+NOTES.md
+TODO.md
+.private/
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+

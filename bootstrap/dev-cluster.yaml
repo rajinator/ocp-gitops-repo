@@ -1,0 +1,32 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-cluster-apps
+  namespace: openshift-gitops
+  labels:
+    cluster: dev-cluster
+    app-type: app-of-apps
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/rajinator/ocp-gitops-repo
+    targetRevision: HEAD
+    path: apps/dev-cluster
+  
+  destination:
+    name: in-cluster
+    namespace: openshift-gitops
+  
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+

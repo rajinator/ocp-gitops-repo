@@ -1,0 +1,34 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Choose which apps to deploy (components are optional)
+components:
+  # Note: openshift-gitops-operator is for manual bootstrap only, not app-of-apps
+  
+  # OpenShift GitOps - managed by ArgoCD
+  - ../components/openshift-gitops-custom        # ArgoCD configuration
+  - ../components/openshift-gitops-with-auto-approval  # Operator self-management with auto-approval
+  
+  # GitLab Runner Operator
+  - ../components/gitlab-runner-operator
+  
+  # Cert Manager Operator (test with InstallPlanApprover)
+  - ../components/cert-manager-operator
+
+# Cluster-specific labels
+labels:
+  - pairs:
+      cluster: dev-cluster
+      environment: homelab
+
+# Example: Add cluster-specific patches here
+# patches:
+#   - target:
+#       kind: Application
+#       name: gitlab-runner-operator
+#     patch: |-
+#       - op: replace
+#         path: /spec/source/path
+#         value: ocp/gitlab-runner-operator/overlays/dev-cluster
+

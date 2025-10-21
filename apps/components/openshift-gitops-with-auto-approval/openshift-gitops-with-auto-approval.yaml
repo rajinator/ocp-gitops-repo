@@ -1,0 +1,54 @@
+---
+# ArgoCD Application for OpenShift GitOps self-management with auto-approval
+# Uses CronJob to automatically approve InstallPlans
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openshift-gitops-with-auto-approval
+  namespace: openshift-gitops
+  labels:
+    app-type: self-management
+    approval-mode: automatic
+    argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/rajinator/k8s-apps-repo
+    targetRevision: HEAD
+    path: ocp/openshift-gitops-operator/overlays/with-auto-approval
+  
+  destination:
+    name: in-cluster
+    namespace: openshift-gitops-operator
+  
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+      - PruneLast=true  # Delete resources in reverse order (namespace last)
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # Ignore OLM-managed status fields
+  ignoreDifferences:
+    - group: operators.coreos.com
+      kind: Subscription
+      jsonPointers:
+        - /status
+    - group: operators.coreos.com
+      kind: InstallPlan
+      jsonPointers:
+        - /status
+    - group: operators.coreos.com
+      kind: ClusterServiceVersion
+      jsonPointers:
+        - /status
+

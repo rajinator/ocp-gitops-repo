@@ -1,0 +1,35 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitlab-runner-operator
+  namespace: openshift-gitops
+  labels:
+    app-type: operator
+    argoproj.io/sync-wave: "5"
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/rajinator/k8s-apps-repo
+    targetRevision: HEAD
+    path: ocp/gitlab-runner-operator/overlays/gitops-auto-approval
+  
+  destination:
+    name: in-cluster
+    namespace: gitlab-runner-operator
+  
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - PruneLast=true  # Delete resources in reverse order (namespace last)
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
