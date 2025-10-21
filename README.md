@@ -51,24 +51,35 @@ components:
 ```bash
 # 1. Manual Bootstrap: Deploy OpenShift GitOps operator
 oc apply -k ../k8s-apps-repo/ocp/openshift-gitops-operator/base/
-oc apply -k ../k8s-apps-repo/ocp/openshift-gitops-operator/approval/bootstrap/
 
 # 2. Wait for operator ready
 oc wait --for=condition=Ready pod -l name=openshift-gitops-operator -n openshift-gitops-operator --timeout=300s
 
-# 3. Wait for ArgoCD instance to be ready
+# 3. Manually approve the OpenShift GitOps operator's InstallPlan (one-time only)
+oc patch installplan $(oc get installplan -n openshift-gitops-operator -o name | head -1) \
+  -n openshift-gitops-operator --type merge --patch '{"spec":{"approved":true}}'
+
+# 4. Wait for ArgoCD instance to be ready
 oc wait --for=condition=Ready argocd/openshift-gitops -n openshift-gitops --timeout=300s
 
-# 4. Bootstrap App-of-Apps (includes self-management)
+# 5. Bootstrap App-of-Apps (includes centralized approval for all operators)
 oc apply -f bootstrap/dev-cluster.yaml
 ```
 
-**Note:** The App-of-Apps includes self-management, so GitOps will manage itself going forward.
+**How It Works:**
+1. OpenShift GitOps operator is bootstrapped manually (one-time setup)
+2. App-of-Apps deploys:
+   - **InstallPlan Approver Operator** (sync-wave 1)
+   - **Cluster-wide InstallPlanApprover CR** (sync-wave 2)
+   - **OpenShift GitOps self-management** (sync-wave 3)
+   - **All other operators** (sync-wave 5+)
+3. All subsequent InstallPlans are automatically approved by the centralized operator
 
-**InstallPlan Approval:** Other operators (like gitlab-runner) will have pending InstallPlans after initial deployment. Either:
-- Pre-bootstrap them manually (see k8s-apps-repo operator docs)
-- Manually approve their InstallPlans after ArgoCD deploys them
-- Use the CronJob overlay for automatic approval (homelab use)
+**Benefits:**
+- ✅ **Event-driven:** No polling, instant approval
+- ✅ **Version control:** Only approves if CSV matches Subscription's startingCSV
+- ✅ **Centralized:** One operator handles all namespaces
+- ✅ **No CronJobs:** No race conditions or timing issues
 
 ## ArgoCD Access
 
