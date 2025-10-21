@@ -25,6 +25,8 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=false
+      - ServerSideApply=true
+      - FailOnSharedResource=true # Fail if multiple argo apps are managing the same resource
     retry:
       limit: 3
       backoff:

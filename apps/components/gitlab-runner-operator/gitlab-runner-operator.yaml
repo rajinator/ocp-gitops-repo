@@ -28,7 +28,9 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=false
+      - ServerSideApply=true
       - PruneLast=true  # Delete resources in reverse order (namespace last)
+      - FailOnSharedResource=true # Fail if multiple argo apps are managing the same resource
     retry:
       limit: 3
       backoff:
