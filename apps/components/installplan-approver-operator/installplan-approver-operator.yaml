@@ -15,7 +15,7 @@ spec:
   
   source:
     repoURL: https://github.com/rajinator/k8s-apps-repo
-    targetRevision: HEAD
+    targetRevision: v0.1.0
     path: ocp/installplan-approver-operator/overlays/multi-namespace
   
   destination:
