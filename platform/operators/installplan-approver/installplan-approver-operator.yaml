@@ -14,7 +14,7 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/rajinator/privatek8s-apps-repo
+    repoURL: https://github.com/rajinator/private-k8s-apps-repo
     targetRevision: main
     path: ocp/installplan-approver-operator/base
   
