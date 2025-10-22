@@ -14,8 +14,8 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/rajinator/private-k8s-apps-repo
-    targetRevision: refactor-ocp-structure
+    repoURL: https://github.com/rajinator/k8s-apps-repo
+    targetRevision: v0.1.1
     path: ocp/operators/openshift-gitops/base
   
   destination:

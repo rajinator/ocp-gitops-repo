@@ -15,7 +15,7 @@ All configs use sync waves **10-20** to deploy after operators are installed:
 ### installplan-approver
 **Purpose:** InstallPlanApprover CRs for multi-namespace approval  
 **Namespace:** `iplan-approver-system`  
-**Source:** [private-k8s-apps-repo](https://github.com/rajinator/private-k8s-apps-repo)  
+**Source:** [k8s-apps-repo](https://github.com/rajinator/k8s-apps-repo)  
 **Wave:** 2 (needs to be deployed right after the operator)
 
 ### cert-manager

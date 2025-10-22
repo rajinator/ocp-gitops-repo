@@ -20,13 +20,13 @@ All operators use sync waves **1-5** to ensure proper deployment order:
 ### cert-manager
 **Purpose:** Red Hat cert-manager Operator for certificate management  
 **Namespace:** `cert-manager-operator`  
-**Source:** [private-k8s-apps-repo](https://github.com/rajinator/private-k8s-apps-repo)  
+**Source:** [k8s-apps-repo](https://github.com/rajinator/k8s-apps-repo)  
 **Notes:** Uses recursive DNS nameservers overlay
 
 ### gitlab-runner
 **Purpose:** GitLab Runner Operator for CI/CD  
 **Namespace:** `gitlab-runner-operator`  
-**Source:** [private-k8s-apps-repo](https://github.com/rajinator/private-k8s-apps-repo)
+**Source:** [k8s-apps-repo](https://github.com/rajinator/k8s-apps-repo)
 
 ### openshift-gitops
 **Purpose:** ArgoCD/OpenShift GitOps with custom configuration  
