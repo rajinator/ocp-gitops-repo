@@ -14,7 +14,7 @@ spec:
   
   source:
     repoURL: https://github.com/rajinator/ocp-gitops-repo
-    targetRevision: v0.1.1
+    targetRevision: dev
     path: bootstrap/ocp4-d2
   
   destination:
