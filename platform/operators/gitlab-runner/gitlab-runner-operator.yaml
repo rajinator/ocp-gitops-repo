@@ -15,7 +15,7 @@ spec:
   
   source:
     repoURL: https://github.com/rajinator/k8s-apps-repo
-    targetRevision: v0.1.1
+    targetRevision: dev
     path: ocp/operators/gitlab-runner/base
   
   destination:
@@ -32,9 +32,10 @@ spec:
       - PruneLast=true  # Delete resources in reverse order (namespace last)
       - FailOnSharedResource=true # Fail if multiple argo apps are managing the same resource
     retry:
-      limit: 3
+      limit: 5
       backoff:
-        duration: 5s
+        duration: 30s
         factor: 2
-        maxDuration: 3m
+        maxDuration: 1h
+
 

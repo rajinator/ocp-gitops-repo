@@ -30,9 +30,9 @@ spec:
       - CreateNamespace=false  # Namespace created by operator
       - ServerSideApply=true
     retry:
-      limit: 3
+      limit: 5
       backoff:
-        duration: 5s
+        duration: 30s
         factor: 2
-        maxDuration: 3m
+        maxDuration: 1h
 
