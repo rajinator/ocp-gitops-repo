@@ -13,8 +13,8 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/rajinator/ocp-gitops-repo
-    targetRevision: main
+    repoURL: https://github.com/rajinator/private-ocp-gitops-repo
+    targetRevision: test-add-automated-certs
     path: bootstrap/ocp4-d2
   
   destination:
