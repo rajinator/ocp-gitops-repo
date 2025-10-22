@@ -1,0 +1,33 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Cluster-specific Rook Ceph configuration for ocp4-d2
+# This overlay references the upstream production config and applies cluster-specific patches
+
+namespace: rook-ceph
+
+resources:
+  # Reference the upstream production configuration
+  - https://github.com/rajinator/k8s-apps-repo/ocp/configs/rook-ceph/overlays/production?ref=main
+
+# Cluster-specific patches
+patches:
+  # Patch disk selection for this cluster
+  - target:
+      kind: CephCluster
+      name: rook-ceph
+    patch: |-
+      - op: replace
+        path: /spec/storage/devices
+        value:
+          - name: "sdb"
+      - op: replace
+        path: /spec/storage/useAllNodes
+        value: true
+
+# Cluster-specific annotations
+commonAnnotations:
+  cluster: ocp4-d2
+  cluster-fqdn: ocp4.d2.homelab.bapu.cloud
+

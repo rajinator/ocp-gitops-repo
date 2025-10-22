@@ -17,9 +17,11 @@ components:
   - ../../platform/operators/openshift-gitops            # Wave 3: GitOps operator self-management
   - ../../platform/operators/gitlab-runner               # Wave 5: CI/CD runners
   - ../../platform/operators/cert-manager                # Wave 5: Certificate management
+  - ../../platform/operators/rook-ceph                   # Wave 6: Storage operator
   
   # Platform Configs (sync-wave 2+)
   - ../../platform/configs/installplan-approver          # Wave 2: InstallPlan CRs
+  - ../../platform/configs/rook-ceph                     # Wave 15: Ceph cluster and storage classes
 
 # Cluster-specific labels
 labels:
