@@ -9,7 +9,7 @@ namespace: rook-ceph
 
 resources:
   # Reference the upstream production configuration
-  - https://github.com/rajinator/k8s-apps-repo/ocp/configs/rook-ceph/overlays/production?ref=main
+  - https://github.com/rajinator/k8s-apps-repo//ocp/configs/rook-ceph/overlays/production?ref=dev
 
 # Cluster-specific patches
 patches:
