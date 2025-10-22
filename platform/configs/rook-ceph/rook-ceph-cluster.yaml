@@ -18,10 +18,10 @@ spec:
   source:
     path: platform/configs/rook-ceph/overlays/ocp4-d2
     repoURL: https://github.com/rajinator/ocp-gitops-repo
-    targetRevision: main
+    targetRevision: dev
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true
     syncOptions:
       - CreateNamespace=false  # Namespace already exists from operator
