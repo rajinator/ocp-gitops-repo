@@ -1,6 +1,9 @@
 ---
-# ArgoCD Application for cert-manager Operator
+# ArgoCD Application for Red Hat cert-manager Operator for Red Hat OpenShift
 # Uses centralized InstallPlan Approver Operator for automatic approval
+# 
+# The operator installs into cert-manager-operator namespace
+# and deploys cert-manager components into cert-manager namespace
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -9,18 +12,19 @@ metadata:
   labels:
     app-type: operator
     approval-mode: centralized
+    operator-source: redhat-operators
     argoproj.io/sync-wave: "5"
 spec:
   project: default
   
   source:
-    repoURL: https://github.com/rajinator/k8s-apps-repo
-    targetRevision: v0.1.0
-    path: ocp/cert-manager-operator/base
+    repoURL: https://github.com/rajinator/private-k8s-apps-repo
+    targetRevision: main
+    path: ocp/cert-manager-operator/overlays/recursive-ns
   
   destination:
     name: in-cluster
-    namespace: cert-manager
+    namespace: cert-manager-operator
   
   syncPolicy:
     automated:

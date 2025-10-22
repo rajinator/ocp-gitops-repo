@@ -1,176 +1,115 @@
-# OCP GitOps Repository
+# OpenShift GitOps Repository
 
-GitOps App Management using ArgoCD App of Apps pattern with Kustomize components.
+GitOps repository for managing OpenShift clusters using ArgoCD Application-of-Apps pattern.
 
-Assisted by: Cursor and claude-4.5-sonnet
+Assisted by: Cursor with claude-4.5-sonnet
 
 ## Repository Structure
 
 ```
 ocp-gitops-repo/
-├── apps/
-│   ├── components/            # Optional app components (à la carte)
-│   │   ├── openshift-gitops-custom/
-│   │   ├── openshift-gitops-self-managed/
-│   │   ├── openshift-gitops-with-auto-approval/
-│   │   └── gitlab-runner-operator/
-│   └── dev-cluster/           # dev-cluster
-│       └── kustomization.yaml
-└── bootstrap/
-    └── dev-cluster.yaml      # Bootstrap app-of-apps for dev-cluster
+├── bootstrap/                    # Cluster bootstrap configurations
+│   └── ocp4-d2/                 # ocp4.d2.homelab.bapu.cloud
+│       ├── kustomization.yaml   # App-of-Apps entrypoint
+│       └── README.md
+│
+├── platform/                     # Platform-level components (admin-managed)
+│   ├── operators/               # OLM Operators (sync-wave 1-5)
+│   │   ├── installplan-approver/
+│   │   ├── cert-manager/
+│   │   ├── gitlab-runner/
+│   │   ├── openshift-gitops/
+│   │   └── README.md
+│   │
+│   └── configs/                 # Platform configurations (sync-wave 10-20)
+│       ├── installplan-approver/
+│       ├── cert-manager/
+│       └── README.md
+│
+└── apps/                        # Application workloads (sync-wave 30+)
+    └── README.md                # Currently empty, reserved for future apps
 ```
 
-## How It Works
+## GitOps Pattern
 
-### Components (Optional Apps)
+This repository uses the **App-of-Apps** pattern:
+- Each cluster has a **bootstrap Application** in `bootstrap/<cluster>/`
+- Bootstrap references **platform operators** and **platform configs**
+- ArgoCD deploys everything in **dependency order** using sync-waves
 
-Each app is a Kustomize component - **all apps are opt-in**:
+## Sync Wave Strategy
 
-```yaml
-# apps/dev-cluster/kustomization.yaml
-components:
-  - ../components/openshift-gitops-custom         # ✅ Include
-  - ../components/openshift-gitops-self-managed   # ✅ Include
-  - ../components/gitlab-runner-operator          # ✅ Include
-```
+| Wave | Category | Purpose | Examples |
+|------|----------|---------|----------|
+| 0-5 | Platform Operators | Install OLM operators | InstallPlan Approver, Cert-Manager, GitLab Runner |
+| 10-20 | Platform Configs | Configure operators | ClusterIssuers, InstallPlanApprover CRs |
+| 30+ | Applications | Deploy workloads | Future applications |
 
-### Per-Cluster Selection
+## Cluster Deployment
 
-Each cluster chooses exactly which apps to deploy:
+### Initial Bootstrap
 
-```yaml
-# apps/dev-cluster/kustomization.yaml
-components:
-  - ../components/openshift-gitops-custom
-  - ../components/openshift-gitops-self-managed
-  - ../components/gitlab-runner-operator
-```
+1. **Install OpenShift GitOps Operator** (manual, one-time):
+   ```bash
+   kubectl apply -k bootstrap/openshift-gitops-operator/base
+   ```
 
-## Quick Start (dev-cluster)
+2. **Create Bootstrap Application**:
+   ```bash
+   kubectl apply -f - <<EOF
+   apiVersion: argoproj.io/v1alpha1
+   kind: Application
+   metadata:
+     name: ocp4-d2-bootstrap
+     namespace: openshift-gitops
+   spec:
+     project: default
+     source:
+       repoURL: https://github.com/rajinator/ocp-gitops-repo
+       targetRevision: main
+       path: bootstrap/ocp4-d2
+     destination:
+       name: in-cluster
+       namespace: openshift-gitops
+     syncPolicy:
+       automated:
+         prune: false
+         selfHeal: true
+   EOF
+   ```
 
-```bash
-# 1. Manual Bootstrap: Deploy OpenShift GitOps operator
-oc apply -k ../k8s-apps-repo/ocp/openshift-gitops-operator/base/
+3. **Watch Deployment**:
+   ```bash
+   kubectl get applications -n openshift-gitops
+   argocd app list
+   ```
 
-# 2. Wait for operator ready
-oc wait --for=condition=Ready pod -l name=openshift-gitops-operator -n openshift-gitops-operator --timeout=300s
+## Source Repositories
 
-# 3. Manually approve the OpenShift GitOps operator's InstallPlan (one-time only)
-oc patch installplan $(oc get installplan -n openshift-gitops-operator -o name | head -1) \
-  -n openshift-gitops-operator --type merge --patch '{"spec":{"approved":true}}'
+This repository contains **only ArgoCD Application manifests** (pointers). Actual Kubernetes resources are in:
 
-# 4. Wait for ArgoCD instance to be ready
-oc wait --for=condition=Ready argocd/openshift-gitops -n openshift-gitops --timeout=300s
+- **Public operators/configs**: [k8s-apps-repo](https://github.com/rajinator/k8s-apps-repo)
+- **Private configs/secrets**: [private-k8s-apps-repo](https://github.com/rajinator/private-k8s-apps-repo)
 
-# 5. Bootstrap App-of-Apps (includes centralized approval for all operators)
-oc apply -f bootstrap/dev-cluster.yaml
-```
+## Adding New Clusters
 
-**How It Works:**
-1. OpenShift GitOps operator is bootstrapped manually (one-time setup)
-2. App-of-Apps deploys:
-   - **InstallPlan Approver Operator + CR** (sync-wave 1)
-   - **OpenShift GitOps self-management** (sync-wave 3)
-   - **All other operators** (sync-wave 5+)
-3. All subsequent InstallPlans are automatically approved by the centralized operator
+1. Create new directory: `bootstrap/<cluster-name>/`
+2. Copy and customize `bootstrap/ocp4-d2/kustomization.yaml`
+3. Adjust cluster-specific labels and patches
+4. Apply bootstrap Application pointing to new path
 
-**Benefits:**
-- ✅ **Event-driven:** No polling, instant approval
-- ✅ **Version control:** Only approves if CSV matches Subscription's startingCSV
-- ✅ **Centralized:** One operator handles all namespaces
-- ✅ **No CronJobs:** No race conditions or timing issues
+## Key Features
 
-## ArgoCD Access
+- ✅ **Centralized InstallPlan Approval** - Automated operator upgrades
+- ✅ **Cert-Manager Integration** - Automated TLS certificate management
+- ✅ **GitOps Self-Management** - ArgoCD manages itself
+- ✅ **Sync Wave Orchestration** - Proper dependency ordering
+- ✅ **Multi-Cluster Ready** - Easy to add new clusters
 
-```bash
-# Get route
-oc get route openshift-gitops-server -n openshift-gitops
+## Related Documentation
 
-# Get admin password
-oc get secret openshift-gitops-cluster -n openshift-gitops -o jsonpath='{.data.admin\.password}' | base64 -d
-```
-
-## Available Apps
-
-### Infrastructure
-- **installplan-approver-operator** - Centralized OLM InstallPlan approval (operator + multi-namespace CR)
-
-### GitOps Platform
-- **openshift-gitops-custom** - Custom ArgoCD config with version-pinning aware health checks
-- **openshift-gitops-with-auto-approval** - Operator self-management (uses centralized approval)
-
-### OLM Operators
-- **cert-manager-operator** - Certificate management with version pinning
-- **gitlab-runner-operator** - GitLab CI/CD runner management
-
-## Add New Cluster
-
-```bash
-# 1. Copy and customize cluster config
-cp -r apps/dev-cluster apps/prod-cluster
-vim apps/prod-cluster/kustomization.yaml
-# - Update labels
-# - Choose components
-
-# 2. Copy and customize bootstrap
-cp bootstrap/dev-cluster.yaml bootstrap/prod-cluster.yaml
-vim bootstrap/prod-cluster.yaml
-# - Update name: prod-cluster-apps
-# - Update labels.cluster: prod-cluster
-# - Update source.path: apps/prod-cluster
-
-# 3. Deploy
-oc apply -f bootstrap/prod-cluster.yaml
-```
-
-## Add New App Component
-
-```bash
-# 1. Create component directory
-mkdir -p apps/components/my-app
-cd apps/components/my-app
-
-# 2. Add ArgoCD Application manifest
-cat > my-app.yaml <<EOF
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: my-app
-  namespace: openshift-gitops
-spec:
-  source:
-    repoURL: <repo-url>
-    path: <path>
-  destination:
-    namespace: my-app
-  syncPolicy:
-    automated:
-      prune: false
-      selfHeal: true
-EOF
-
-# 3. Create component kustomization
-cat > kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1alpha1
-kind: Component
-resources:
-  - my-app.yaml
-EOF
-
-# 4. Add to cluster config
-vim apps/dev-cluster/kustomization.yaml
-# Add: - ../components/my-app
-```
-
-## Notes
-
-### Repository References
-- **k8s-apps-repo**: Application manifests (source)
-- **ocp-gitops-repo**: ArgoCD Applications (this repo)
-
-### Design Principles
-- **Optional by Default**: No app is forced on any cluster
-- **Declarative**: All configs in Git
-- **Composable**: Mix and match components per cluster
-- **Patchable**: Override settings per cluster with Kustomize patches
+- [Bootstrap Documentation](./bootstrap/ocp4-d2/README.md)
+- [Platform Operators](./platform/operators/README.md)
+- [Platform Configs](./platform/configs/README.md)
+- [Applications](./apps/README.md)
 

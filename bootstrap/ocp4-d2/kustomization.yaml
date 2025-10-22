@@ -1,0 +1,39 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: ocp4-d2-bootstrap
+  annotations:
+    config.kubernetes.io/description: "Bootstrap Application-of-Apps for ocp4.d2.homelab.bapu.cloud"
+
+# Platform Components (sync-wave 0-20)
+components:
+  # Platform Configs - ArgoCD Cluster Instance (sync-wave 0)
+  - ../../platform/configs/openshift-gitops-cluster-instance  # Wave 0: ArgoCD cluster config
+  
+  # Platform Operators (sync-wave 1-5)
+  - ../../platform/operators/installplan-approver        # Wave 1: InstallPlan automation
+  - ../../platform/operators/openshift-gitops            # Wave 3: GitOps operator self-management
+  - ../../platform/operators/gitlab-runner               # Wave 5: CI/CD runners
+  
+  # Platform Configs (sync-wave 2+)
+  - ../../platform/configs/installplan-approver          # Wave 2: InstallPlan CRs
+
+# Cluster-specific labels
+labels:
+  - pairs:
+      cluster: ocp4-d2
+      environment: homelab
+      cluster-fqdn: ocp4.d2.homelab.bapu.cloud
+
+# Cluster-specific patches (if needed)
+# patches:
+#   - target:
+#       kind: Application
+#       name: cert-manager-operator
+#     patch: |-
+#       - op: replace
+#         path: /spec/source/targetRevision
+#         value: v1.0.1
+

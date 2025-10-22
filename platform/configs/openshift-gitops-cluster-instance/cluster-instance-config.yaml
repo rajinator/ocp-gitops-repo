@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: openshift-gitops-custom
+  name: cluster-instance-gitops-config
   namespace: openshift-gitops
   labels:
     app-type: config

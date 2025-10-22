@@ -2,18 +2,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dev-cluster-apps
+  name: ocp4-d2-bootstrap
   namespace: openshift-gitops
   labels:
-    cluster: dev-cluster
+    cluster: ocp4-d2
+    cluster-fqdn: ocp4.d2.homelab.bapu.cloud
     app-type: app-of-apps
+    environment: homelab
 spec:
   project: default
   
   source:
     repoURL: https://github.com/rajinator/ocp-gitops-repo
-    targetRevision: v0.1.0
-    path: apps/dev-cluster
+    targetRevision: main
+    path: bootstrap/ocp4-d2
   
   destination:
     name: in-cluster

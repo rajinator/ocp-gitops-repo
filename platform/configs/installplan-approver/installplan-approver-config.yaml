@@ -1,0 +1,38 @@
+---
+# ArgoCD Application for InstallPlan Approver Configuration
+# Deploys InstallPlanApprover CR for centralized approval
+# Requires: installplan-approver-operator to be deployed first (sync-wave 1)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: installplan-approver-config-multi-ns
+  namespace: openshift-gitops
+  labels:
+    app-type: config
+    argoproj.io/sync-wave: "2"  # After operator (wave 1)
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/rajinator/private-k8s-apps-repo
+    targetRevision: main
+    path: ocp/installplan-approver-config/overlays/multi-namespace
+  
+  destination:
+    name: in-cluster
+    namespace: iplan-approver-system
+  
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false  # Namespace created by operator
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
