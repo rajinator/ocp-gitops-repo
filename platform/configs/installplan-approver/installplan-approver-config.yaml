@@ -15,8 +15,8 @@ spec:
   
   source:
     repoURL: https://github.com/rajinator/private-k8s-apps-repo
-    targetRevision: main
-    path: ocp/installplan-approver-config/overlays/multi-namespace
+    targetRevision: refactor-ocp-structure
+    path: ocp/configs/installplan-approver/overlays/multi-namespace
   
   destination:
     name: in-cluster

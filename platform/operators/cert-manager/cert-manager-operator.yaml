@@ -19,8 +19,8 @@ spec:
   
   source:
     repoURL: https://github.com/rajinator/private-k8s-apps-repo
-    targetRevision: main
-    path: ocp/cert-manager-operator/overlays/recursive-ns
+    targetRevision: refactor-ocp-structure
+    path: ocp/operators/cert-manager/overlays/recursive-ns
   
   destination:
     name: in-cluster

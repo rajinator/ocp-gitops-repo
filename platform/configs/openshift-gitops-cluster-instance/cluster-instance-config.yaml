@@ -11,9 +11,9 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/rajinator/k8s-apps-repo
-    targetRevision: v0.1.0
-    path: ocp/openshift-gitops-operator/overlays/custom
+    repoURL: https://github.com/rajinator/private-k8s-apps-repo
+    targetRevision: refactor-ocp-structure
+    path: ocp/operators/openshift-gitops/overlays/custom
   
   destination:
     name: in-cluster
