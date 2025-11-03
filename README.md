@@ -100,7 +100,7 @@ This repository contains **only ArgoCD Application manifests** (pointers). Actua
 
 ## Key Features
 
-- ✅ **Centralized InstallPlan Approval** - Automated operator upgrades
+- ✅ **Centralized InstallPlan Approval** - Version controlled upgrades for specific OLM operators
 - ✅ **Cert-Manager Integration** - Automated TLS certificate management
 - ✅ **GitOps Self-Management** - ArgoCD manages itself
 - ✅ **Sync Wave Orchestration** - Proper dependency ordering
